@@ -9,7 +9,6 @@ license=(LGPL)
 url="http://www.freedesktop.org/wiki/Software/polkit"
 depends=(glib2 pam expat libsystemd js)
 makedepends=(intltool gtk-doc gobject-introspection)
-options=('!libtool')
 install=polkit.install
 source=(http://www.freedesktop.org/software/polkit/releases/$pkgname-$pkgver.tar.gz
         polkit.pam)
