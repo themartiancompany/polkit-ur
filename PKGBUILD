@@ -1,4 +1,8 @@
-# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# SPDX-License-Identifier: AGPL-3.0
+#
+# Maintainer:  Truocolo <truocolo@aol.com>
+# Maintainer:  Pellegrino Prevete <cGVsbGVncmlub3ByZXZldGVAZ21haWwuY29tCg== | base -d>
+# Maintainer:  Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 # Contributor: Jan de Groot <jgc@archlinux.org>
 
 pkgname=polkit
@@ -6,8 +10,15 @@ pkgver=123
 pkgrel=1
 pkgdesc="Application development toolkit for controlling system-wide privileges"
 url="https://gitlab.freedesktop.org/polkit/polkit"
-arch=(x86_64)
-license=(LGPL)
+arch=(
+  x86_64
+  arm
+  aarch64
+  i686
+)
+license=(
+  LGPL
+)
 depends=(
   duktape
   expat
@@ -21,26 +32,41 @@ makedepends=(
   gtk-doc
   meson
 )
-checkdepends=(python-dbusmock)
-provides=(libpolkit-{agent,gobject}-1.so)
-backup=(etc/pam.d/polkit-1)
+checkdepends=(
+  python-dbusmock
+)
+provides=(
+  libpolkit-{agent,gobject}-1.so
+)
+backup=(
+  etc/pam.d/polkit-1
+)
 _commit=fc8b07e71d99f88a29258cde99b913b44da1846d  # tags/123^0
 source=(
   "git+https://gitlab.freedesktop.org/polkit/polkit.git#commit=$_commit"
 )
-b2sums=('SKIP')
+b2sums=(
+  'SKIP'
+)
 
 pkgver() {
   cd polkit
-  git describe --tags | sed 's/[^-]*-g/r&/;s/-/+/g'
+  git \
+    describe \
+      --tags | \
+    sed \
+      's/[^-]*-g/r&/;s/-/+/g'
 }
 
 prepare() {
-  cd polkit
+  cd \
+    polkit
 }
 
 build() {
-  local meson_options=(
+  local \
+    meson_options=()
+  meson_options=(
     -D examples=true
     -D gtk_doc=true
     -D man=true
@@ -48,21 +74,46 @@ build() {
     -D session_tracking=libsystemd-login
     -D tests=true
   )
-
-  arch-meson polkit build "${meson_options[@]}"
-  meson compile -C build
+  arch-meson \
+    polkit \
+      build \
+        "${meson_options[@]}"
+  meson \
+    compile \
+    -C \
+      build
 }
 
 check() {
-  meson test -C build --print-errorlogs -t 3
+  meson \
+    test \
+    -C \
+      build \
+    --print-errorlogs \
+    -t \
+      3
 }
 
 package() {
-  meson install -C build --destdir "$pkgdir"
-
-  install -d -o root -g 102 -m 750 "$pkgdir"/{etc,usr/share}/polkit-1/rules.d
-
-  install -Dm644 /dev/stdin "$pkgdir/usr/lib/sysusers.d/$pkgname.conf" <<END
+  meson \
+    install \
+    -C \
+      build \
+    --destdir \
+    "${pkgdir}"
+  install \
+    -d \
+    -o \
+      root \
+    -g \
+      102 \
+    -m \
+      750 \
+    "${pkgdir}/"{etc,usr/share}/polkit-1/rules.d
+  install \
+    -Dm644 \
+    /dev/stdin \
+    "${pkgdir}/usr/lib/sysusers.d/${pkgname}.conf" <<END
 u polkitd 102 "PolicyKit daemon"
 m polkitd proc
 END
